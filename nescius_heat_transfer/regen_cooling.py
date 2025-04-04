@@ -19,12 +19,12 @@ gamma = 1.1598             # N/A         | Specific heat ratio
 R = 373.8                  # J/kg-K      | Gas constant (From RPA)
 visc_g = 1.0405e-4         # Pa-s        | Gas viscosity
 Cp_g = gamma*R/(gamma-1)   # J/kg-K      | Gas specific heat
-Tc_ns = 1410            # K           | Combustion temperature (From CEA)
+Tc_ns = 1891               # K           | Combustion temperature (From CEA)
 Pr_g = 0.52                # N/A         | Gas Prandtl's number (From RPA, NASA equation didn't match well)
 pc_ns = psia2Pa(420)       # N/m^2       | Nozzle stagnation pressure
-F = lb2N(152)               # N           | Engine thrust
+F = lb2N(69)               # N           | Engine thrust
 pe = psia2Pa(p_atm)        # N/m^2       | Nozzle exist pressure, atmospheric presure
-fo_ratio = 1.1             # N/A         | Weight ratio of fuel to oxidizer
+of_ratio = .8             # N/A         | Weight ratio of fuel to oxidizer
 contraction_ratio = 22.5   # N/A         | Ratio of combustion chamber area to throaat area
 Lc = 1.667                 # m           | Characteristic length, aka time for combustion
 theta_conv = 40            # deg         | Nozzle converging half cone angle
@@ -37,8 +37,9 @@ v_e = sqrt((2 * gamma) / (gamma - 1) * R * Tc_ns * (1 - (pe / pc_ns) ** ((gamma 
 Isp = v_e / g # s
 # Calculate total mass flow rate
 m_dot = F / v_e # kg/s
-m_dot_ox = m_dot*fo_ratio/(1+fo_ratio) # kg/s
-m_dot_fuel = m_dot*1/(1+fo_ratio) # kg/s
+print(m_dot)
+m_dot_ox = m_dot*of_ratio/(1+of_ratio) # kg/s
+m_dot_fuel = m_dot*1/(1+of_ratio) # kg/s
 print(f"m_dot_fuel {m_dot_fuel}")
 
 # Calculate throat and exit areas    m^2
@@ -72,6 +73,7 @@ R_4 = lambda x: -np.sqrt((1.5 * R_t) ** 2 - x ** 2) + 2.5 * R_t
 x_3 = 1.5 * R_t * sind(-theta_conv)
 r_2max = (R_c-R_4(x_3))/(1-cosd(theta_conv))
 r_2 = r_2max*r_2ratio
+print(r_2)
 R_3 = lambda x: -tand(theta_conv) * (x - x_3) + R_4(x_3)
 x_2 = x_3 - (R_c - R_4(x_3) - r_2*(1 - cosd(theta_conv))) / tand(theta_conv)
 x_1 = x_2 - r_2 * sind(theta_conv)
@@ -89,6 +91,7 @@ Vol_conv = quad(A_conv,x_1,x_4)[0]
 Vol_cyl = Lc*A_t - Vol_conv
 L_cyl = Vol_cyl/r2area(R_c)
 print(f"L_cyl {m2mm(L_cyl)}")
+print(R_t)
 x_0 = x_1-L_cyl
 
 M1 = tand(theta_n)
@@ -166,13 +169,13 @@ print(f"Longitudinal frequency: {N_R} Hz")
 #----------------------------+-------------+------------------
 k_316 = 15                   # W/m-K       | 316L wall thermal conductivity
 E_316 = 1.8e11               # Pa          | Modulus of elasticity for 316L
-poisson_316 = 0.25           # N/A         | Poisson's ratio for 316L
+poisson_316 = 0.29           # N/A         | Poisson's ratio for 316L
 cte_316 = 16e-6              # m/m-K         | Coeffecient of thermal expansion for 316L
 k_co = 0.167                 # W/m-k       | Ethanol coolant thermal conductivity
 shell_thick_i = mm2m(1)      # m           | Thickness of inner chamber wall
 shell_thick_o = mm2m(1)      # m           | Outer chamber wall thickness
 channel_w = mm2m(1)          # m           | Thickness of channel divider
-channel_h = mm2m(1.5)          # m           | Channel hieght
+channel_h = mm2m(1)          # m           | Channel hieght
 n_channels = 20              # Int         | Number of cooling channels
 theta_chan = 2*pi/n_channels # rad         | Angle a channel takes up
 Tco = 293.15                 # K           | Coolant inlet temperature
@@ -353,7 +356,7 @@ m_film = A_cool/eta/(Cp_ethanol(T_avg)*(T_boil-T_i)/(7000*(Tc_ns-T_avg)) + H_vap
 print(f"Film cooling mass flow: {m_film}")
 print(f"Fuel mass flow {m_dot_fuel}")
 
-plt.plot(x_list, hg_list/1000)
+plt.plot(x_list, Pa2MPa(stress_list))
 plt.ylabel("Stress (MPa)")
 plt.show()
 

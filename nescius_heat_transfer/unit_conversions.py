@@ -4,6 +4,7 @@ p_atm = 14.7    # psia - atmospheric pressue at sea level
 # Unit conversions functions
 #-----------------------------------------------------------------------------------------------------------------------
 mm2m = lambda length: length*.001
+in2m = lambda length: length*0.0254
 microm2m = lambda length: length*.000001
 m2mm = lambda length: length*1000
 ci2m3 = lambda volume: volume * .0000163871
