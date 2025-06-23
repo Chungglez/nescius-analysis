@@ -1,21 +1,19 @@
 import math
 from math import floor
-
 from nescius_heat_transfer.unit_conversions import *
 import itertools
 
-from valve_design.solenoid_sizing import voltage
 
 # FIXED VARIABLES
-#-----------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------- ---------------------------------------------------------
 # Value                       | Units       | Description
 #-----------------------------+-------------+------------------
 mu_0 = 4e-7*pi                # H/m         | Permeability of free space
-mu_r = 100                    # N/A         | Relative permeability of 410 stainless steel
+mu_r = 700                    # N/A         | Relative permeability of 410 stainless steel
 resistivity = 1.724e-8        # Ω-m         | Resistivity of copper
 fluid_pressure = psia2Pa(500) # Pa          | Maximum absolute pump pressure
 stroke = in2m(1/16)            # m           | Trave`l distance of the solenoid plunger
-bobbin_thickness = mm2m(1)    # m           | Thickness of the bobbin that the coild is wound around
+bobbin_thickness = mm2m(2)    # m           | Thickness of the bobbin that the coild is wound around
 bot_thickness = in2m(3/16)   # m           | Thickness of the circular steel disc at the bottom of the solenoid
 top_thickness = in2m(3/16)    # m           | Thickness of the circular steel disc at the top of the solenoid
 outer_tube_thickness = in2m(.065)   # m           | Wall thickness of the steel tube surrounding the solenoid
@@ -100,7 +98,7 @@ for voltage, solenoid_diameter, solenoid_height, wire_size, core_ID in options:
     i1 = voltage/L*.001
     # Evaluate (and save) result
     score = F_compare
-    if current > 8*max_current:
+    if current >4:
         continue    # Don't allow results that are close to the limit of the wire
     if score > best_score:
         best_score = score

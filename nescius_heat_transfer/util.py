@@ -8,6 +8,9 @@ def cosd(x):
 def tand(x):
     return tan(radians(x))
 
+def avg(a, b):
+    return (a+b)/2
+
 
 # Safe interpolation wrapper for np function
 def interp(x: float, x_list, y_list) -> float:

@@ -15,16 +15,16 @@ from scipy.integrate import quad
 # Value                    | Units       | Description
 #--------------------------+-------------+------------------
 g = 9.80665                # m/s^2       | Acceleration due to gravity
-gamma = 1.1598             # N/A         | Specific heat ratio
-R = 373.8                  # J/kg-K      | Gas constant (From RPA)
-visc_g = 1.0405e-4         # Pa-s        | Gas viscosity
+gamma = 1.1603             # N/A         | Specific heat ratio
+R = 358.8                  # J/kg-K      | Gas constant (From RPA)
+visc_g = 1.0707e-4         # Pa-s        | Gas viscosity
 Cp_g = gamma*R/(gamma-1)   # J/kg-K      | Gas specific heat
-Tc_ns = 1891               # K           | Combustion temperature (From CEA)
-Pr_g = 0.52                # N/A         | Gas Prandtl's number (From RPA, NASA equation didn't match well)
+Tc_ns = 3271.68            # K           | Combustion temperature (From CEA)
+Pr_g = 0.5498              # N/A         | Gas Prandtl's number (From RPA, NASA equation didn't match well)
 pc_ns = psia2Pa(420)       # N/m^2       | Nozzle stagnation pressure
 F = lb2N(69)               # N           | Engine thrust
 pe = psia2Pa(p_atm)        # N/m^2       | Nozzle exist pressure, atmospheric presure
-of_ratio = .8             # N/A         | Weight ratio of fuel to oxidizer
+of_ratio = 1.6             # N/A         | Weight ratio of fuel to oxidizer
 contraction_ratio = 22.5   # N/A         | Ratio of combustion chamber area to throaat area
 Lc = 1.667                 # m           | Characteristic length, aka time for combustion
 theta_conv = 40            # deg         | Nozzle converging half cone angle
@@ -41,6 +41,7 @@ print(m_dot)
 m_dot_ox = m_dot*of_ratio/(1+of_ratio) # kg/s
 m_dot_fuel = m_dot*1/(1+of_ratio) # kg/s
 print(f"m_dot_fuel {m_dot_fuel}")
+print(f"m_dot_lox {m_dot_ox}")
 
 # Calculate throat and exit areas    m^2
 A_t = m_dot * sqrt(Tc_ns) / (
@@ -65,6 +66,7 @@ R_t = area2r(A_t)
 D_t = 2*R_t
 R_e = area2r(A_e)
 R_c = area2r(A_t * contraction_ratio)
+print(R_c)
 
 R_5 = lambda x: -np.sqrt((0.382 * R_t) ** 2 - x ** 2) + 1.382 * R_t
 x_5 = 0.382 * R_t * sind(theta_n)
@@ -73,7 +75,6 @@ R_4 = lambda x: -np.sqrt((1.5 * R_t) ** 2 - x ** 2) + 2.5 * R_t
 x_3 = 1.5 * R_t * sind(-theta_conv)
 r_2max = (R_c-R_4(x_3))/(1-cosd(theta_conv))
 r_2 = r_2max*r_2ratio
-print(r_2)
 R_3 = lambda x: -tand(theta_conv) * (x - x_3) + R_4(x_3)
 x_2 = x_3 - (R_c - R_4(x_3) - r_2*(1 - cosd(theta_conv))) / tand(theta_conv)
 x_1 = x_2 - r_2 * sind(theta_conv)
@@ -90,8 +91,6 @@ A_conv = lambda x: pi * R_conv(x)**2
 Vol_conv = quad(A_conv,x_1,x_4)[0]
 Vol_cyl = Lc*A_t - Vol_conv
 L_cyl = Vol_cyl/r2area(R_c)
-print(f"L_cyl {m2mm(L_cyl)}")
-print(R_t)
 x_0 = x_1-L_cyl
 
 M1 = tand(theta_n)
@@ -113,7 +112,8 @@ def R_engine(z):
         [z < x_1, (z >= x_1)& (z < x_2), (z >= x_2) & (z < x_3), (z >= x_3) & (z < x_4),(z >= x_4) & (z < x_5), z>=x_5],
         [R_c, R_2, R_3, R_4, R_5,R_6]
     )
-print(f"{m2mm(D_t)} {m2mm(R_c*2)} {m2mm(R_e)} {m2mm(L_cyl)}")
+print(f"{x_0} {x_1} {x_2} {x_3} {x_4} {x_6}")
+print(f"{a} {b} {c}")
 
 x_list = np.linspace(x_6, x_0, 1000)
 plt.plot(x_list, R_engine(x_list))

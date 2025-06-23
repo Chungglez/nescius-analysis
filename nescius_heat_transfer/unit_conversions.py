@@ -1,5 +1,6 @@
 from numpy import pi
 p_atm = 14.7    # psia - atmospheric pressue at sea level
+g = 9.80665     # m/s^2       | Acceleration due to gravity
 
 # Unit conversions functions
 #-----------------------------------------------------------------------------------------------------------------------
@@ -15,8 +16,10 @@ Pa2psia = lambda Pa: Pa/6894.76
 F2K = lambda temp: (temp - 32)*5/9 + 273.15
 K2C = lambda temp: (temp-273.15)
 K2R = lambda temp: temp*1.8
+C2K = lambda temp: temp+273.15
 g2kg = lambda mass: mass/1000
 kg2g = lambda mass: mass*1000
+kg2N = lambda mass: mass*g
 kg2lb = lambda mass: mass*2.20462
 lb2N = lambda force: force*4.44822
 N2lb = lambda force: force/4.44822
@@ -24,6 +27,7 @@ m2in = lambda length: length*39.3701
 m22in2 = lambda area: area*1550
 m32in3 = lambda volume: volume*61023.7
 Pa2MPa = lambda stress: stress/1000000
+bar2Pa = lambda pressure: pressure*100000
 
 
 # Convert from SI units to Hutzel gross Imperial units
